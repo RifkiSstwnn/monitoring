@@ -24,99 +24,125 @@ class DesktopResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
-            ->schema([
-                Forms\Components\TextInput::make('SN')
-                    ->label('Serial Number')
-                    ->required()
-                    ->maxLength(255),
-    
-                Forms\Components\TextInput::make('USER NAME')
-                    ->label('Borrower Name')
-                    ->required()
-                    ->maxLength(255),
-    
-                Forms\Components\TextInput::make('NRP')
-                    ->label('NRP')
-                    ->maxLength(255),
-    
-                Forms\Components\TextInput::make('DIVISI')
-                    ->label('Division')
-                    ->required()
-                    ->maxLength(255),
+        ->schema([
+            Forms\Components\TextInput::make('OWNER')
+                ->label('Owner')
+                ->required()
+                ->maxLength(255),
 
-                Forms\Components\TextInput::make('COMP NAME')
-                    ->label('Nama Komputer')
-                    ->maxLength(255),
+            Forms\Components\TextInput::make('PHASE')
+                ->label('Phase')
+                ->required()
+                ->maxLength(255),
 
-                Forms\Components\TextInput::make('TYPE UNIT')
-                    ->label('Tipe Unit')
-                    ->maxLength(255),
+            Forms\Components\TextInput::make('COMP NAME REV')
+                ->label('Comp Name Rev')
+                ->required()
+                ->maxLength(255),
 
-                Forms\Components\TextInput::make('OS')
-                    ->label('OS')
-                    ->maxLength(255),
-                    
-                Forms\Components\TextInput::make('SITE')
-                    ->label('Site')
-                    ->maxLength(255),
+            Forms\Components\TextInput::make('CLASSIFICATION UNIT')
+                ->label('Classification Unit')
+                ->required()
+                ->maxLength(255),
+
+            Forms\Components\TextInput::make('CATEGORY UNIT')
+                ->label('Category Unit')
+                ->required()
+                ->maxLength(255),
+                
+            Forms\Components\TextInput::make('SN')
+                ->label('Serial Number')
+                ->required()
+                ->maxLength(255),
+
+            Forms\Components\TextInput::make('USER NAME')
+                ->label('Nama Peminjam')
+                ->required()
+                ->maxLength(255),
+
+            Forms\Components\TextInput::make('NRP')
+                ->label('NRP')
+                ->required()
+                ->maxLength(255),
+
+            Forms\Components\TextInput::make('DIVISI')
+                ->label('Division')
+                ->required()
+                ->maxLength(255),
+
+            Forms\Components\TextInput::make('COMP NAME')
+                ->label('Nama Komputer')
+                ->maxLength(255),
+
+            Forms\Components\TextInput::make('TYPE UNIT')
+                ->label('Tipe Unit')
+                ->maxLength(255),
+
+            Forms\Components\TextInput::make('OS')
+                ->label('OS')
+                ->maxLength(255),
+                
+            Forms\Components\TextInput::make('SITE')
+                ->label('Site')
+                ->maxLength(255),
     
+
                 Section::make('Uptime Statistics')
+                ->hidden(fn ($livewire) => $livewire instanceof Pages\CreateDesktop) // Sembunyikan saat create
                 ->schema([
                     Forms\Components\TextInput::make('total_uptime')
                         ->label('Total Uptime')
                         ->disabled()
                         ->formatStateUsing(function ($state, $record) {
+                            if (!$record) return 'N/A';
+                            
                             $uptimeStats = DB::table('daily_uptimes')
-                                ->join('laptops', 'daily_uptimes.laptop_sn', '=', 'laptops.sn')
-                                ->select(
-                                    DB::raw('SUM(daily_uptimes.uptime) as total_uptime')
-                                )
-                                ->where('laptops.SN', $record->SN)
-                                ->first();
-
-                                return $uptimeStats->total_uptime;
-                            }),
+                                ->where('laptop_sn', $record->SN)
+                                ->sum('uptime');
+            
+                            return $uptimeStats ?? '0';
+                        }),
                     Forms\Components\TextInput::make('total_idle_time')
                         ->label('Total Idle Time')
                         ->disabled()
                         ->formatStateUsing(function ($state, $record) {
+                            if (!$record) return 'N/A';
+                            
                             $idleTimeStats = DB::table('daily_uptimes')
-                                ->join('laptops', 'daily_uptimes.laptop_sn', '=', 'laptops.sn')
-                                ->select(
-                                    DB::raw('SUM(daily_uptimes.idle_time) as total_idle_time')
-                                )
-                                ->where('laptops.SN', $record->SN)
-                                ->first();
-
-                            return $idleTimeStats->total_idle_time;
+                                ->where('laptop_sn', $record->SN)
+                                ->sum('idle_time');
+            
+                            return $idleTimeStats ?? '0';
                         }),
                 ])
                 ->columnSpan('full'),
-    
-                Section::make('Daily Uptime Records')
-                    ->schema([
-                        Forms\Components\Repeater::make('daily_uptimes')
-                            ->relationship('dailyUptimes')
-                            ->schema([
-                                Forms\Components\TextInput::make('date')
-                                    ->label('Date')
-                                    ->required(),
-                                Forms\Components\TextInput::make('time')
-                                    ->label('Start Time')
-                                    ->required(),
-                                Forms\Components\TextInput::make('uptime')
-                                    ->label('Uptime')
-                                    ->disabled()
-                                    ->formatStateUsing(fn ($state) => $state),
-                                    Forms\Components\TextInput::make('idle_time')
-                                    ->label('Idle Time')
-                                    ->disabled()
-                                    ->formatStateUsing(fn ($state) => $state),
-                                    ])
-                            ->columnSpan('full')
-                            ->extraAttributes(['style' => 'max-height: 300px; overflow-y: auto;']),
-                    ]),
-        ]);
+                        
+                    Section::make('Daily Uptime Records')
+                    ->hidden(fn ($livewire) => $livewire instanceof Pages\CreateDesktop) // Sembunyikan saat create
+                        ->schema([
+                            Forms\Components\Repeater::make('daily_uptimes')
+                                ->relationship('dailyUptimes')
+                                ->schema([
+                                    Forms\Components\TextInput::make('date')
+                                        ->label('Date')
+                                        ->required(),
+                                    Forms\Components\TextInput::make('time')
+                                        ->label('Start Time')
+                                        ->required(),
+                                    Forms\Components\TextInput::make('uptime')
+                                        ->label('Uptime')
+                                        ->disabled()
+                                        ->formatStateUsing(fn ($state) => $state),
+                                        Forms\Components\TextInput::make('idle_time')
+                                        ->label('Idle Time')
+                                        ->disabled()
+                                        ->formatStateUsing(fn ($state) => $state),
+                                        ])
+                                ->columnSpan('full')
+                                ->extraAttributes(['style' => 'max-height: 300px; overflow-y: auto;']),
+                        ]),
+    ]);
+
     }
 
     public static function table(Table $table): Table
@@ -161,12 +187,12 @@ class DesktopResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 // Tables\Actions\EditAction::make(),
+            ])
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
             ]);
-            // ->bulkActions([
-            //     Tables\Actions\BulkActionGroup::make([
-            //         Tables\Actions\DeleteBulkAction::make(),
-            //     ]),
-            // ]);
     }
 
     public static function getRelations(): array
@@ -180,7 +206,7 @@ class DesktopResource extends Resource
     {
         return [
             'index' => Pages\ListDesktops::route('/'),
-            // 'create' => Pages\CreateDesktop::route('/create'),
+            'create' => Pages\CreateDesktop::route('/create'),
             'view' => Pages\ViewDesktop::route('/{record}'),
             // 'edit' => Pages\EditDesktop::route('/{record}/edit'),
         ];
