@@ -11,6 +11,8 @@ class Laptop extends Model
 {
     use HasFactory;
     protected $primaryKey = 'SN';
+    public $timestamps = false; // Tambahkan ini untuk menonaktifkan timestamps
+
 
     protected $fillable = [
         'OWNER', 'PHASE', 'SITE', 'COMP NAME', 'COMP NAME REV', 'SN', 'TYPE UNIT', 'CLASSIFICATION UNIT', 'CATEGORY UNIT', 'OS', 'USER NAME', 'NRP', 'DIVISI'

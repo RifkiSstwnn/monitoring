@@ -153,7 +153,8 @@ class LaptopResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('USER NAME')
                     ->label('Nama')
-                    ->searchable(),
+                    ->searchable()
+                    ->formatStateUsing(fn (string $state): string => strlen($state) > 20 ? substr($state, 0, 20) . '...' : $state),
                 Tables\Columns\TextColumn::make('NRP')
                     ->label('NRP')
                     ->searchable(),
@@ -164,11 +165,13 @@ class LaptopResource extends Resource
                 Tables\Columns\TextColumn::make('CATEGORY UNIT')
                     ->label('Jenis Unit')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()                
+                    ->formatStateUsing(fn (string $state): string => strlen($state) > 20 ? substr($state, 0, 20) . '...' : $state),
                 Tables\Columns\TextColumn::make('TYPE UNIT')
                     ->label('Jenis Unit')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->formatStateUsing(fn (string $state): string => strlen($state) > 20 ? substr($state, 0, 20) . '...' : $state),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Created At')
                     ->dateTime()

@@ -53,7 +53,9 @@ class DesktopResource extends Resource
             Forms\Components\TextInput::make('SN')
                 ->label('Serial Number')
                 ->required()
-                ->maxLength(255),
+                ->maxLength(255)
+                ->unique(table: Laptop::class, column: 'SN', ignoreRecord: true)
+                ->helperText('Serial Number harus unik'),
 
             Forms\Components\TextInput::make('USER NAME')
                 ->label('Nama Peminjam')
@@ -149,37 +151,40 @@ class DesktopResource extends Resource
     {
         return $table->query(fn() => Laptop::query()->where('CATEGORY UNIT', 'Desktop'))
             ->columns([
-                Tables\Columns\TextColumn::make('SN')
-                    ->label('Serial Number')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('USER NAME')
-                    ->label('Nama')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('NRP')
-                    ->label('NRP')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('DIVISI')
-                    ->label('Division')
-                    ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('CATEGORY UNIT')
-                    ->label('Jenis Unit')
-                    ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('TYPE UNIT')
-                    ->label('Jenis Unit')
-                    ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->label('Created At')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->label('Updated At')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+            Tables\Columns\TextColumn::make('SN')
+                ->label('Serial Number')
+                ->searchable(),
+            Tables\Columns\TextColumn::make('USER NAME')
+                ->label('Nama')
+                ->searchable()
+                ->formatStateUsing(fn (string $state): string => strlen($state) > 20 ? substr($state, 0, 20) . '...' : $state),
+            Tables\Columns\TextColumn::make('NRP')
+                ->label('NRP')
+                ->searchable(),
+            Tables\Columns\TextColumn::make('DIVISI')
+                ->label('Division')
+                ->searchable()
+                ->sortable(),
+            Tables\Columns\TextColumn::make('CATEGORY UNIT')
+                ->label('Jenis Unit')
+                ->searchable()
+                ->sortable()
+                ->formatStateUsing(fn (string $state): string => strlen($state) > 20 ? substr($state, 0, 20) . '...' : $state),
+            Tables\Columns\TextColumn::make('TYPE UNIT')
+                ->label('Jenis Unit')
+                ->searchable()
+                ->sortable()
+                ->formatStateUsing(fn (string $state): string => strlen($state) > 20 ? substr($state, 0, 20) . '...' : $state),
+            Tables\Columns\TextColumn::make('created_at')
+                ->label('Created At')
+                ->dateTime()
+                ->sortable()
+                ->toggleable(isToggledHiddenByDefault: true),
+            Tables\Columns\TextColumn::make('updated_at')
+                ->label('Updated At')
+                ->dateTime()
+                ->sortable()
+                ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 //
