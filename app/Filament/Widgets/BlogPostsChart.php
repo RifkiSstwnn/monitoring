@@ -35,18 +35,22 @@ class BlogPostsChart extends ChartWidget
         $values = [];
 
         foreach ($stats as $stat) {
-            $total_seconds = $stat->total_uptime;
-            $hours = floor($total_seconds / 3600);
-            $minutes = floor(($total_seconds % 3600) / 60);
-            
-            // $labels[] = "{$stat->DIVISI}, {$hours}h {$minutes}m";
-            $labels[] = "{$stat->DIVISI}";
-            
-            if ($filter === 'total') {
-                $values[] = round($total_seconds / 3600, 2);
-            } else {
-                $values[] = round($total_seconds / 3600 / $stat->count, 2);
+            if($stat->DIVISI != null)
+            {
+                $total_seconds = $stat->total_uptime;
+                $hours = floor($total_seconds / 3600);
+                $minutes = floor(($total_seconds % 3600) / 60);
+                
+                // $labels[] = "{$stat->DIVISI}, {$hours}h {$minutes}m";
+                $labels[] = "{$stat->DIVISI}";
+                
+                if ($filter === 'total') {
+                    $values[] = round($total_seconds / 3600, 2);
+                } else {
+                    $values[] = round($total_seconds / 3600 / $stat->count, 2);
+                }
             }
+
         }
 
         return [

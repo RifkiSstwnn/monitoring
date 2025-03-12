@@ -87,6 +87,19 @@ class DesktopResource extends Resource
             Forms\Components\TextInput::make('SITE')
                 ->label('Site')
                 ->maxLength(255),
+
+            Forms\Components\TextInput::make('total_shutdown')
+                ->label('Total Shutdowns')
+                ->disabled()
+                ->formatStateUsing(function ($state, $record) {
+                    if (!$record) return 'N/A';
+                    
+                    $shutdownCount = DB::table('daily_uptimes')
+                        ->where('laptop_sn', $record->SN)
+                        ->count('time');
+        
+                    return $shutdownCount ?? '0';
+                }),
     
 
                 Section::make('Uptime Statistics')
